@@ -2,6 +2,13 @@ from django.db import models
 
 
 class Movie(models.Model):
+
+    # An inner class to provide ordering for the year and title on a page in 
+    # descending order due to the (-) prefix.
+    class Meta:
+        ordering = ('-year', 'title')
+
+    # Attributes to provide rating choices of the movies.
     NOT_RATED = 0
     RATED_G = 1
     RATED_PG = 2
