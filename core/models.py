@@ -1,6 +1,6 @@
 from django.db import models
 
-# Create your models here.
+
 class Movie(models.Model):
     NOT_RATED = 0
     RATED_G = 1
