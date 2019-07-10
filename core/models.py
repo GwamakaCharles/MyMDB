@@ -1,8 +1,19 @@
 from django.db import models
 
 
-class Movie(models.Model):
 
+
+class MovieManager(models.Manager):
+
+    def all_with_related_persons(self):
+        qs = self.get_queryset()
+        qs = qs.select_related('director')
+        qs = qs.prefetch_related('writers', 'actors')
+        return qs
+
+
+class Movie(models.Model):
+    objects = MovieManager()
     # An inner class to provide ordering for the year and title on a page in 
     # descending order due to the (-) prefix.
     class Meta:
@@ -24,16 +35,33 @@ class Movie(models.Model):
     title = models.CharField(max_length = 140)
     plot = models.TextField()
     year = models.PositiveIntegerField()
-    rating = models.IntegerField(choices=RATINGS, default=NOT_RATED)
+    rating = models.IntegerField(
+        choices=RATINGS,
+        default=NOT_RATED)
     runtime = models.PositiveIntegerField()
     website = models.URLField(blank=True)
-    director = models.ForeignKey(to='Person', on_delete=models.SET_NULL, related_name='directed', null=True, blank=True)
-    writers = models.ManyToManyField(to='Person', related_name='writing_credits', blank=True)
+    director = models.ForeignKey(
+        to='Person', 
+        on_delete=models.SET_NULL, 
+        related_name='directed', 
+        null=True, 
+        blank=True)
+    writers = models.ManyToManyField(
+        to='Person', 
+        related_name='writing_credits', 
+        blank=True)
+    actors = models.ManyToManyField(
+        to='Person',
+        through='Role',
+        related_name='acting_credits',
+        blank=True)
 
 
 
     def __str__(self):
         return '{} ({})'.format(self.title, self.year)
+
+
 
 
 class PersonManager(models.Manager):
@@ -43,11 +71,12 @@ class PersonManager(models.Manager):
 
 
 class Person(models.Model):
+    objects = PersonManager()
     first_name = models.CharField(max_length=140)
     last_name = models.CharField(max_length=140)
     born = models.DateField()
     died = models.DateField(null=True, blank=True)
-    objects = PersonManager()
+    
 
     class Meta:
         ordering = ('last_name', 'first_name')
