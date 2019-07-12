@@ -34,9 +34,9 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
-    # the user app must be at the top
-    'user', 
     'core',
+    'user', # the user app must come before admin
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -135,4 +135,4 @@ MEDIA_URL = '/uploaded/'
 MEDIA_ROOT = os.path.join(BASE_DIR, '../media_root')
 
 LOGIN_REDIRECT_URL = 'core:MovieList'
-LOGIN_URL = 'user: login'
+LOGIN_URL = 'user:login'
